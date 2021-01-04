@@ -98,12 +98,17 @@ pub fn native_destroy_empty(
 ) -> PartialVMResult<NativeResult> {
     debug_assert!(ty_args.len() == 1);
     debug_assert!(args.len() == 1);
+    let execute_start = std::time::Instant::now();
 
     let v = pop_arg!(args, Vector);
 
     let cost = native_gas(context.cost_table(), NativeCostIndex::DESTROY_EMPTY, 1);
 
-    v.destroy_empty(cost, &ty_args[0], context)
+    let result = v.destroy_empty(cost, &ty_args[0], context);
+    let execute_time = std::time::Instant::now().duration_since(execute_start);
+    println!(">>>>> native_destroy_empty execution time {}", execute_time.as_micros());
+
+    result
 }
 
 pub fn native_swap(
